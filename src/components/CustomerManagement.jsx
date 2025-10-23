@@ -537,7 +537,7 @@ const CustomerManagement = () => {
             <div className="action-buttons">
               <button className="btn-primary" onClick={openCompleteCustomerModal}>
                 <i className="fas fa-user-plus"></i>
-                Add Complete Customer
+                Add New Global Customer
               </button>
             </div>
           </div>
