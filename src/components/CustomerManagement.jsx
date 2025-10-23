@@ -1192,7 +1192,7 @@ const UnitModal = ({ unit, onClose }) => {
               <DetailItem label="City" value={unit.city} />
               <DetailItem label="Country" value={unit.country} />
               <DetailItem label="Zone" value={unit.zone_name} />
-              <DetailItem label="Unit ID" value={unit.unit_id} />
+             
             </div>
           </div>
 
