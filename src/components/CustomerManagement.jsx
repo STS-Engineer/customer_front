@@ -76,16 +76,6 @@ const CustomerManagement = () => {
     }
   };
 
-  const openCreateGroupModal = () => {
-    setSelectedGroup(null);
-    setFormData({
-      groupe_name: '',
-      Description: ''
-    });
-    setFormErrors({});
-    setIsGroupModalOpen(true);
-  };
-
   const openCompleteCustomerModal = () => {
     setEditingCustomer(null);
     setCompleteCustomerData({
