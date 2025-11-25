@@ -76,7 +76,15 @@ const CustomerManagement = () => {
     }
   };
 
-
+  const openCreateGroupModal = () => {
+    setSelectedGroup(null);
+    setFormData({
+      groupe_name: '',
+      Description: ''
+    });
+    setFormErrors({});
+    setIsGroupModalOpen(true);
+  };
 
   const openCompleteCustomerModal = () => {
     setEditingCustomer(null);
@@ -223,30 +231,75 @@ const CustomerManagement = () => {
     });
   };
 
-  const addUnit = () => {
-    setCompleteCustomerData(prev => ({
-      ...prev,
-      units: [
-        ...prev.units,
-        {
-          unit_name: '',
-          city: '',
-          country: '',
-          zone_name: '',
-          responsible: {
-            Person_id: null,
-            first_name: '',
-            last_name: '',
-            job_title: '',
-            email: '',
-            phone_number: '',
-            role: 'Contact',
-            zone_name: ''
-          }
+const addUnit = () => {
+  setCompleteCustomerData(prev => ({
+    ...prev,
+    units: [
+      ...prev.units,
+      {
+        unit_name: '',
+        city: '',
+        country: '',
+        zone_name: '',
+        // Account Information
+        account_name: '',
+        parent_account: '',
+        key_account: '',
+        ke_account_manager: '',
+        avo_carbon_main_contact: '',
+        avo_carbon_tech_lead: '',
+        type: '',
+        industry: '',
+        account_owner: '',
+        phone: '',
+        website: '',
+        employees: '',
+        useful_information: '',
+        billing_account_number: '',
+        product_family: '',
+        account_currency: '',
+        // Company Information
+        start_year: '',
+        solvent_customer: '',
+        solvency_info: '',
+        budget_avo_carbon: '',
+        avo_carbon_potential_buisness: '',
+        // Address Information
+        billing_address_search: '',
+        billing_street: '',
+        billing_city: '',
+        billing_state: '',
+        billing_zip: '',
+        billing_country: '',
+        shippping_address_search: '',
+        shipping_street: '',
+        shipping_city: '',
+        shipping_state: '',
+        shipping_zip: '',
+        shipping_country: '',
+        copy_billing: false,
+        // Agreements
+        confidentiality_agreement: false,
+        quality_agreement: false,
+        terms_purshase: '',
+        logistics_agreement: false,
+        payment_conditions: '',
+        tech_key_account: '',
+        // Responsible Person
+        responsible: {
+          Person_id: null,
+          first_name: '',
+          last_name: '',
+          job_title: '',
+          email: '',
+          phone_number: '',
+          role: 'Contact',
+          zone_name: ''
         }
-      ]
-    }));
-  };
+      }
+    ]
+  }));
+};
 
   const removeUnit = (index) => {
     if (completeCustomerData.units.length > 1 || !editingCustomer) {
@@ -317,110 +370,102 @@ const CustomerManagement = () => {
     }
   };
 
-  const handleSubmitCompleteCustomer = async (e) => {
-    e.preventDefault();
-    if (!validateCompleteCustomer()) return;
+const handleSubmitCompleteCustomer = async (e) => {
+  e.preventDefault();
+  if (!validateCompleteCustomer()) return;
 
-    try {
-      setLoading(true);
-      
-      if (editingCustomer) {
-        // UPDATE EXISTING CUSTOMER
-        // 1. Update the group
-        const groupResponse = await fetch(`https://customer-back.azurewebsites.net/ajouter/api/groups/${editingCustomer.groupe_id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(completeCustomerData.group),
-        });
+  try {
+    setLoading(true);
+    
+    if (editingCustomer) {
+      // UPDATE EXISTING CUSTOMER
+      // 1. Update the group
+      const groupResponse = await fetch(`https://customer-back.azurewebsites.net/ajouter/api/groups/${editingCustomer.groupe_id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(completeCustomerData.group),
+      });
 
-        if (!groupResponse.ok) {
-          const errorData = await groupResponse.json();
-          throw new Error(errorData.error || 'Failed to update group');
-        }
+      if (!groupResponse.ok) {
+        const errorData = await groupResponse.json();
+        throw new Error(errorData.error || 'Failed to update group');
+      }
 
-        // 2. Update or create units
-        const unitPromises = completeCustomerData.units.map(async (unit) => {
-          const unitData = {
-            groupe_id: editingCustomer.groupe_id,
-            unit_name: unit.unit_name,
-            city: unit.city || null,
-            country: unit.country || null,
-            zone_name: unit.zone_name || null,
-            com_person_id: unit.responsible?.Person_id || null
-          };
+      // 2. Update or create units with ALL FIELDS
+      const unitPromises = completeCustomerData.units.map(async (unit) => {
+        const unitData = {
+          groupe_id: editingCustomer.groupe_id,
+          unit_name: unit.unit_name,
+          city: unit.city || null,
+          country: unit.country || null,
+          com_person_id: unit.responsible?.Person_id || null,
+          zone_name: unit.zone_name || null,
+          // Account Information
+          account_name: unit.account_name || null,
+          parent_account: unit.parent_account || null,
+          key_account: unit.key_account || null,
+          ke_account_manager: unit.ke_account_manager || null,
+          avo_carbon_main_contact: unit.avo_carbon_main_contact || null,
+          avo_carbon_tech_lead: unit.avo_carbon_tech_lead || null,
+          type: unit.type || null,
+          industry: unit.industry || null,
+          account_owner: unit.account_owner || null,
+          phone: unit.phone || null,
+          website: unit.website || null,
+          employees: unit.employees || null,
+          useful_information: unit.useful_information || null,
+          billing_account_number: unit.billing_account_number || null,
+          product_family: unit.product_family || null,
+          account_currency: unit.account_currency || null,
+          // Company Information
+          start_year: unit.start_year || null,
+          solvent_customer: unit.solvent_customer || null,
+          solvency_info: unit.solvency_info || null,
+          budget_avo_carbon: unit.budget_avo_carbon || null,
+          avo_carbon_potential_buisness: unit.avo_carbon_potential_buisness || null,
+          // Address Information
+          billing_address_search: unit.billing_address_search || null,
+          billing_street: unit.billing_street || null,
+          billing_city: unit.billing_city || null,
+          billing_state: unit.billing_state || null,
+          billing_zip: unit.billing_zip || null,
+          billing_country: unit.billing_country || null,
+          shippping_address_search: unit.shippping_address_search || null,
+          shipping_street: unit.shipping_street || null,
+          shipping_city: unit.shipping_city || null,
+          shipping_state: unit.shipping_state || null,
+          shipping_zip: unit.shipping_zip || null,
+          shipping_country: unit.shipping_country || null,
+          copy_billing: unit.copy_billing || false,
+          // Agreements
+          confidentiality_agreement: unit.confidentiality_agreement || false,
+          quality_agreement: unit.quality_agreement || false,
+          terms_purshase: unit.terms_purshase || null,
+          logistics_agreement: unit.logistics_agreement || false,
+          payment_conditions: unit.payment_conditions || null,
+          tech_key_account: unit.tech_key_account || null
+        };
 
-          if (unit.unit_id) {
-            // Update existing unit
-            const unitResponse = await fetch(`https://customer-back.azurewebsites.net/ajouter/api/units/${unit.unit_id}`, {
-              method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(unitData),
-            });
+        if (unit.unit_id) {
+          // Update existing unit
+          const unitResponse = await fetch(`https://customer-back.azurewebsites.net/ajouter/api/units/${unit.unit_id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(unitData),
+          });
 
-            if (!unitResponse.ok) {
-              const errorData = await unitResponse.json();
-              throw new Error(`Failed to update unit ${unit.unit_name}: ${errorData.error || 'Unknown error'}`);
-            }
-
-            return unitResponse.json();
-          } else {
-            // Create new unit
-            const unitResponse = await fetch('https://customer-back.azurewebsites.net/ajouter/api/units', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(unitData),
-            });
-
-            if (!unitResponse.ok) {
-              const errorData = await unitResponse.json();
-              throw new Error(`Failed to create unit ${unit.unit_name}: ${errorData.error || 'Unknown error'}`);
-            }
-
-            return unitResponse.json();
+          if (!unitResponse.ok) {
+            const errorData = await unitResponse.json();
+            throw new Error(`Failed to update unit ${unit.unit_name}: ${errorData.error || 'Unknown error'}`);
           }
-        });
 
-        // Wait for all units to be updated/created
-        await Promise.all(unitPromises);
-        console.log('🔥 Toast launched: Group created/updated');
-
-         toast.success('Customer updated successfully!', 'success');
-      } else {
-        // CREATE NEW CUSTOMER
-        // 1. First create the group
-        const groupResponse = await fetch('https://customer-back.azurewebsites.net/ajouter/api/groups', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(completeCustomerData.group),
-        });
-
-        if (!groupResponse.ok) {
-          const errorData = await groupResponse.json();
-          throw new Error(errorData.error || 'Failed to create group');
-        }
-
-        const groupData = await groupResponse.json();
-        const groupId = groupData.groupe_id;
-
-        // 2. Then create each unit for this group
-        const unitPromises = completeCustomerData.units.map(async (unit) => {
-          const unitData = {
-            groupe_id: groupId,
-            unit_name: unit.unit_name,
-            city: unit.city || null,
-            country: unit.country || null,
-            zone_name: unit.zone_name || null,
-            com_person_id: unit.responsible?.Person_id || null
-          };
-
+          return unitResponse.json();
+        } else {
+          // Create new unit
           const unitResponse = await fetch('https://customer-back.azurewebsites.net/ajouter/api/units', {
             method: 'POST',
             headers: {
@@ -435,27 +480,123 @@ const CustomerManagement = () => {
           }
 
           return unitResponse.json();
+        }
+      });
+
+      // Wait for all units to be updated/created
+      await Promise.all(unitPromises);
+      console.log('🔥 Toast launched: Group created/updated');
+
+      toast.success('Customer updated successfully!', 'success');
+    } else {
+      // CREATE NEW CUSTOMER
+      // 1. First create the group
+      const groupResponse = await fetch('https://customer-back.azurewebsites.net/ajouter/api/groups', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(completeCustomerData.group),
+      });
+
+      if (!groupResponse.ok) {
+        const errorData = await groupResponse.json();
+        throw new Error(errorData.error || 'Failed to create group');
+      }
+
+      const groupData = await groupResponse.json();
+      const groupId = groupData.groupe_id;
+
+      // 2. Then create each unit for this group with ALL FIELDS
+      const unitPromises = completeCustomerData.units.map(async (unit) => {
+        const unitData = {
+          groupe_id: groupId,
+          unit_name: unit.unit_name,
+          city: unit.city || null,
+          country: unit.country || null,
+          com_person_id: unit.responsible?.Person_id || null,
+          zone_name: unit.zone_name || null,
+          // Account Information
+          account_name: unit.account_name || null,
+          parent_account: unit.parent_account || null,
+          key_account: unit.key_account || null,
+          ke_account_manager: unit.ke_account_manager || null,
+          avo_carbon_main_contact: unit.avo_carbon_main_contact || null,
+          avo_carbon_tech_lead: unit.avo_carbon_tech_lead || null,
+          type: unit.type || null,
+          industry: unit.industry || null,
+          account_owner: unit.account_owner || null,
+          phone: unit.phone || null,
+          website: unit.website || null,
+          employees: unit.employees || null,
+          useful_information: unit.useful_information || null,
+          billing_account_number: unit.billing_account_number || null,
+          product_family: unit.product_family || null,
+          account_currency: unit.account_currency || null,
+          // Company Information
+          start_year: unit.start_year || null,
+          solvent_customer: unit.solvent_customer || null,
+          solvency_info: unit.solvency_info || null,
+          budget_avo_carbon: unit.budget_avo_carbon || null,
+          avo_carbon_potential_buisness: unit.avo_carbon_potential_buisness || null,
+          // Address Information
+          billing_address_search: unit.billing_address_search || null,
+          billing_street: unit.billing_street || null,
+          billing_city: unit.billing_city || null,
+          billing_state: unit.billing_state || null,
+          billing_zip: unit.billing_zip || null,
+          billing_country: unit.billing_country || null,
+          shippping_address_search: unit.shippping_address_search || null,
+          shipping_street: unit.shipping_street || null,
+          shipping_city: unit.shipping_city || null,
+          shipping_state: unit.shipping_state || null,
+          shipping_zip: unit.shipping_zip || null,
+          shipping_country: unit.shipping_country || null,
+          copy_billing: unit.copy_billing || false,
+          // Agreements
+          confidentiality_agreement: unit.confidentiality_agreement || false,
+          quality_agreement: unit.quality_agreement || false,
+          terms_purshase: unit.terms_purshase || null,
+          logistics_agreement: unit.logistics_agreement || false,
+          payment_conditions: unit.payment_conditions || null,
+          tech_key_account: unit.tech_key_account || null
+        };
+
+        const unitResponse = await fetch('https://customer-back.azurewebsites.net/ajouter/api/units', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(unitData),
         });
 
-        // Wait for all units to be created
-        await Promise.all(unitPromises);
+        if (!unitResponse.ok) {
+          const errorData = await unitResponse.json();
+          throw new Error(`Failed to create unit ${unit.unit_name}: ${errorData.error || 'Unknown error'}`);
+        }
 
-      
-      }
+        return unitResponse.json();
+      });
+
+      // Wait for all units to be created
+      await Promise.all(unitPromises);
+
       console.log('🔥 Toast launched: Group created')
       toast.success('Customer created successfully!', 'success');
-      // Refresh the customers list
-      await fetchCustomers();
-      closeModals();
-      
-    } catch (err) {
-      console.error('Error saving customer:', err);
-      setError(err.message);
-    
-    } finally {
-      setLoading(false);
     }
-  };
+
+    // Refresh the customers list
+    await fetchCustomers();
+    closeModals();
+    
+  } catch (err) {
+    console.error('Error saving customer:', err);
+    setError(err.message);
+  
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleDeleteGroup = async () => {
     if (!groupToDelete) return;
@@ -537,7 +678,7 @@ const CustomerManagement = () => {
             <div className="action-buttons">
               <button className="btn-primary" onClick={openCompleteCustomerModal}>
                 <i className="fas fa-user-plus"></i>
-                Add New Global Customer
+                Add Complete Customer
               </button>
             </div>
           </div>
@@ -811,7 +952,574 @@ const CompleteCustomerModal = ({
                     placeholder="Enter zone"
                   />
                 </div>
+               {/* Account Information Section */}
+<div className="section-subheader">
+  <h5><i className="fas fa-building"></i> Account Information</h5>
+</div>
 
+<div className="form-row">
+  <div className="form-group">
+    <label htmlFor={`account_name_${unitIndex}`} className="form-label">
+      Account Name
+    </label>
+    <input
+      type="text"
+      id={`account_name_${unitIndex}`}
+      value={unit.account_name || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'account_name', e.target.value)}
+      className="form-input"
+      placeholder="Account name"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor={`parent_account_${unitIndex}`} className="form-label">
+      Parent Account
+    </label>
+    <input
+      type="text"
+      id={`parent_account_${unitIndex}`}
+      value={unit.parent_account || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'parent_account', e.target.value)}
+      className="form-input"
+      placeholder="Parent account"
+    />
+  </div>
+</div>
+
+<div className="form-row">
+  <div className="form-group">
+    <label htmlFor={`key_account_${unitIndex}`} className="form-label">
+      Key Account
+    </label>
+    <input
+      type="text"
+      id={`key_account_${unitIndex}`}
+      value={unit.key_account || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'key_account', e.target.value)}
+      className="form-input"
+      placeholder="Key account"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor={`ke_account_manager_${unitIndex}`} className="form-label">
+      Key Account Manager
+    </label>
+    <input
+      type="text"
+      id={`ke_account_manager_${unitIndex}`}
+      value={unit.ke_account_manager || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'ke_account_manager', e.target.value)}
+      className="form-input"
+      placeholder="Key account manager"
+    />
+  </div>
+</div>
+
+<div className="form-row">
+  <div className="form-group">
+    <label htmlFor={`avo_carbon_main_contact_${unitIndex}`} className="form-label">
+      AVO Carbon Main Contact
+    </label>
+    <input
+      type="text"
+      id={`avo_carbon_main_contact_${unitIndex}`}
+      value={unit.avo_carbon_main_contact || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'avo_carbon_main_contact', e.target.value)}
+      className="form-input"
+      placeholder="Main contact"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor={`avo_carbon_tech_lead_${unitIndex}`} className="form-label">
+      AVO Carbon Tech Lead
+    </label>
+    <input
+      type="text"
+      id={`avo_carbon_tech_lead_${unitIndex}`}
+      value={unit.avo_carbon_tech_lead || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'avo_carbon_tech_lead', e.target.value)}
+      className="form-input"
+      placeholder="Tech lead"
+    />
+  </div>
+</div>
+
+<div className="form-row">
+  <div className="form-group">
+    <label htmlFor={`type_${unitIndex}`} className="form-label">
+      Type
+    </label>
+    <input
+      type="text"
+      id={`type_${unitIndex}`}
+      value={unit.type || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'type', e.target.value)}
+      className="form-input"
+      placeholder="Type"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor={`industry_${unitIndex}`} className="form-label">
+      Industry
+    </label>
+    <input
+      type="text"
+      id={`industry_${unitIndex}`}
+      value={unit.industry || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'industry', e.target.value)}
+      className="form-input"
+      placeholder="Industry"
+    />
+  </div>
+</div>
+
+<div className="form-row">
+  <div className="form-group">
+    <label htmlFor={`account_owner_${unitIndex}`} className="form-label">
+      Account Owner
+    </label>
+    <input
+      type="text"
+      id={`account_owner_${unitIndex}`}
+      value={unit.account_owner || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'account_owner', e.target.value)}
+      className="form-input"
+      placeholder="Account owner"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor={`phone_${unitIndex}`} className="form-label">
+      Phone
+    </label>
+    <input
+      type="text"
+      id={`phone_${unitIndex}`}
+      value={unit.phone || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'phone', e.target.value)}
+      className="form-input"
+      placeholder="Phone"
+    />
+  </div>
+</div>
+
+<div className="form-row">
+  <div className="form-group">
+    <label htmlFor={`website_${unitIndex}`} className="form-label">
+      Website
+    </label>
+    <input
+      type="text"
+      id={`website_${unitIndex}`}
+      value={unit.website || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'website', e.target.value)}
+      className="form-input"
+      placeholder="Website"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor={`employees_${unitIndex}`} className="form-label">
+      Employees
+    </label>
+    <input
+      type="text"
+      id={`employees_${unitIndex}`}
+      value={unit.employees || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'employees', e.target.value)}
+      className="form-input"
+      placeholder="Employees"
+    />
+  </div>
+</div>
+
+<div className="form-group">
+  <label htmlFor={`useful_information_${unitIndex}`} className="form-label">
+    Useful Information
+  </label>
+  <textarea
+    id={`useful_information_${unitIndex}`}
+    value={unit.useful_information || ''}
+    onChange={(e) => onUnitChange(unitIndex, 'useful_information', e.target.value)}
+    className="form-textarea"
+    placeholder="Useful information"
+    rows="3"
+  />
+</div>
+
+<div className="form-row">
+  <div className="form-group">
+    <label htmlFor={`billing_account_number_${unitIndex}`} className="form-label">
+      Billing Account Number
+    </label>
+    <input
+      type="text"
+      id={`billing_account_number_${unitIndex}`}
+      value={unit.billing_account_number || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'billing_account_number', e.target.value)}
+      className="form-input"
+      placeholder="Billing account number"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor={`product_family_${unitIndex}`} className="form-label">
+      Product Family
+    </label>
+    <input
+      type="text"
+      id={`product_family_${unitIndex}`}
+      value={unit.product_family || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'product_family', e.target.value)}
+      className="form-input"
+      placeholder="Product family"
+    />
+  </div>
+</div>
+
+<div className="form-group">
+  <label htmlFor={`account_currency_${unitIndex}`} className="form-label">
+    Account Currency
+  </label>
+  <input
+    type="text"
+    id={`account_currency_${unitIndex}`}
+    value={unit.account_currency || ''}
+    onChange={(e) => onUnitChange(unitIndex, 'account_currency', e.target.value)}
+    className="form-input"
+    placeholder="Account currency"
+  />
+</div>
+
+{/* Company Information Section */}
+<div className="section-subheader">
+  <h5><i className="fas fa-info-circle"></i> Company Information</h5>
+</div>
+
+<div className="form-row">
+  <div className="form-group">
+    <label htmlFor={`start_year_${unitIndex}`} className="form-label">
+      Start Year
+    </label>
+    <input
+      type="number"
+      id={`start_year_${unitIndex}`}
+      value={unit.start_year || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'start_year', e.target.value)}
+      className="form-input"
+      placeholder="Start year"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor={`solvent_customer_${unitIndex}`} className="form-label">
+      Solvent Customer
+    </label>
+    <input
+      type="text"
+      id={`solvent_customer_${unitIndex}`}
+      value={unit.solvent_customer || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'solvent_customer', e.target.value)}
+      className="form-input"
+      placeholder="Solvent customer"
+    />
+  </div>
+</div>
+
+<div className="form-group">
+  <label htmlFor={`solvency_info_${unitIndex}`} className="form-label">
+    Solvency Info
+  </label>
+  <input
+    type="text"
+    id={`solvency_info_${unitIndex}`}
+    value={unit.solvency_info || ''}
+    onChange={(e) => onUnitChange(unitIndex, 'solvency_info', e.target.value)}
+    className="form-input"
+    placeholder="Solvency info"
+  />
+</div>
+
+<div className="form-row">
+  <div className="form-group">
+    <label htmlFor={`budget_avo_carbon_${unitIndex}`} className="form-label">
+      Budget AVO Carbon
+    </label>
+    <input
+      type="text"
+      id={`budget_avo_carbon_${unitIndex}`}
+      value={unit.budget_avo_carbon || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'budget_avo_carbon', e.target.value)}
+      className="form-input"
+      placeholder="Budget AVO carbon"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor={`avo_carbon_potential_buisness_${unitIndex}`} className="form-label">
+      AVO Carbon Potential Business
+    </label>
+    <input
+      type="text"
+      id={`avo_carbon_potential_buisness_${unitIndex}`}
+      value={unit.avo_carbon_potential_buisness || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'avo_carbon_potential_buisness', e.target.value)}
+      className="form-input"
+      placeholder="Potential business"
+    />
+  </div>
+</div>
+
+{/* Address Information Section */}
+<div className="section-subheader">
+  <h5><i className="fas fa-map-marker-alt"></i> Address Information</h5>
+</div>
+
+<div className="form-row">
+  <div className="form-group">
+    <label htmlFor={`billing_street_${unitIndex}`} className="form-label">
+      Billing Street
+    </label>
+    <input
+      type="text"
+      id={`billing_street_${unitIndex}`}
+      value={unit.billing_street || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'billing_street', e.target.value)}
+      className="form-input"
+      placeholder="Billing street"
+    />
+  </div>
+</div>
+
+<div className="form-row">
+  <div className="form-group">
+    <label htmlFor={`billing_city_${unitIndex}`} className="form-label">
+      Billing City
+    </label>
+    <input
+      type="text"
+      id={`billing_city_${unitIndex}`}
+      value={unit.billing_city || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'billing_city', e.target.value)}
+      className="form-input"
+      placeholder="Billing city"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor={`billing_state_${unitIndex}`} className="form-label">
+      Billing State/Province
+    </label>
+    <input
+      type="text"
+      id={`billing_state_${unitIndex}`}
+      value={unit.billing_state || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'billing_state', e.target.value)}
+      className="form-input"
+      placeholder="Billing state"
+    />
+  </div>
+</div>
+
+<div className="form-row">
+  <div className="form-group">
+    <label htmlFor={`billing_zip_${unitIndex}`} className="form-label">
+      Billing Zip/Postal Code
+    </label>
+    <input
+      type="text"
+      id={`billing_zip_${unitIndex}`}
+      value={unit.billing_zip || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'billing_zip', e.target.value)}
+      className="form-input"
+      placeholder="Billing zip"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor={`billing_country_${unitIndex}`} className="form-label">
+      Billing Country
+    </label>
+    <input
+      type="text"
+      id={`billing_country_${unitIndex}`}
+      value={unit.billing_country || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'billing_country', e.target.value)}
+      className="form-input"
+      placeholder="Billing country"
+    />
+  </div>
+</div>
+
+{/* Shipping Address */}
+<div className="form-row">
+  <div className="form-group">
+    <label htmlFor={`shipping_street_${unitIndex}`} className="form-label">
+      Shipping Street
+    </label>
+    <input
+      type="text"
+      id={`shipping_street_${unitIndex}`}
+      value={unit.shipping_street || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'shipping_street', e.target.value)}
+      className="form-input"
+      placeholder="Shipping street"
+    />
+  </div>
+</div>
+
+<div className="form-row">
+  <div className="form-group">
+    <label htmlFor={`shipping_city_${unitIndex}`} className="form-label">
+      Shipping City
+    </label>
+    <input
+      type="text"
+      id={`shipping_city_${unitIndex}`}
+      value={unit.shipping_city || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'shipping_city', e.target.value)}
+      className="form-input"
+      placeholder="Shipping city"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor={`shipping_state_${unitIndex}`} className="form-label">
+      Shipping State/Province
+    </label>
+    <input
+      type="text"
+      id={`shipping_state_${unitIndex}`}
+      value={unit.shipping_state || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'shipping_state', e.target.value)}
+      className="form-input"
+      placeholder="Shipping state"
+    />
+  </div>
+</div>
+
+<div className="form-row">
+  <div className="form-group">
+    <label htmlFor={`shipping_zip_${unitIndex}`} className="form-label">
+      Shipping Zip/Postal Code
+    </label>
+    <input
+      type="text"
+      id={`shipping_zip_${unitIndex}`}
+      value={unit.shipping_zip || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'shipping_zip', e.target.value)}
+      className="form-input"
+      placeholder="Shipping zip"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor={`shipping_country_${unitIndex}`} className="form-label">
+      Shipping Country
+    </label>
+    <input
+      type="text"
+      id={`shipping_country_${unitIndex}`}
+      value={unit.shipping_country || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'shipping_country', e.target.value)}
+      className="form-input"
+      placeholder="Shipping country"
+    />
+  </div>
+</div>
+
+{/* Agreements Section */}
+<div className="section-subheader">
+  <h5><i className="fas fa-file-contract"></i> Agreements</h5>
+</div>
+
+<div className="form-row">
+  <div className="form-group checkbox-group">
+    <label className="checkbox-label">
+      <input
+        type="checkbox"
+        checked={unit.confidentiality_agreement || false}
+        onChange={(e) => onUnitChange(unitIndex, 'confidentiality_agreement', e.target.checked)}
+        className="checkbox-input"
+      />
+      <span className="checkbox-custom"></span>
+      Confidentiality Agreement
+    </label>
+  </div>
+  <div className="form-group checkbox-group">
+    <label className="checkbox-label">
+      <input
+        type="checkbox"
+        checked={unit.quality_agreement || false}
+        onChange={(e) => onUnitChange(unitIndex, 'quality_agreement', e.target.checked)}
+        className="checkbox-input"
+      />
+      <span className="checkbox-custom"></span>
+      Quality Agreement
+    </label>
+  </div>
+</div>
+
+<div className="form-row">
+  <div className="form-group checkbox-group">
+    <label className="checkbox-label">
+      <input
+        type="checkbox"
+        checked={unit.logistics_agreement || false}
+        onChange={(e) => onUnitChange(unitIndex, 'logistics_agreement', e.target.checked)}
+        className="checkbox-input"
+      />
+      <span className="checkbox-custom"></span>
+      Logistics Agreement
+    </label>
+  </div>
+  <div className="form-group checkbox-group">
+    <label className="checkbox-label">
+      <input
+        type="checkbox"
+        checked={unit.copy_billing || false}
+        onChange={(e) => onUnitChange(unitIndex, 'copy_billing', e.target.checked)}
+        className="checkbox-input"
+      />
+      <span className="checkbox-custom"></span>
+      Copy Billing to Shipping
+    </label>
+  </div>
+</div>
+
+<div className="form-row">
+  <div className="form-group">
+    <label htmlFor={`terms_purshase_${unitIndex}`} className="form-label">
+      Terms of Purchase
+    </label>
+    <input
+      type="text"
+      id={`terms_purshase_${unitIndex}`}
+      value={unit.terms_purshase || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'terms_purshase', e.target.value)}
+      className="form-input"
+      placeholder="Terms of purchase"
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor={`payment_conditions_${unitIndex}`} className="form-label">
+      Payment Conditions
+    </label>
+    <input
+      type="text"
+      id={`payment_conditions_${unitIndex}`}
+      value={unit.payment_conditions || ''}
+      onChange={(e) => onUnitChange(unitIndex, 'payment_conditions', e.target.value)}
+      className="form-input"
+      placeholder="Payment conditions"
+    />
+  </div>
+</div>
+
+<div className="form-group">
+  <label htmlFor={`tech_key_account_${unitIndex}`} className="form-label">
+    Tech Key Account
+  </label>
+  <input
+    type="text"
+    id={`tech_key_account_${unitIndex}`}
+    value={unit.tech_key_account || ''}
+    onChange={(e) => onUnitChange(unitIndex, 'tech_key_account', e.target.value)}
+    className="form-input"
+    placeholder="Tech key account"
+  />
+</div>
                 {/* Responsible Person Section with Dropdown */}
                 <div className="responsible-section">
                   <div className="responsible-header">
@@ -1192,9 +1900,93 @@ const UnitModal = ({ unit, onClose }) => {
               <DetailItem label="City" value={unit.city} />
               <DetailItem label="Country" value={unit.country} />
               <DetailItem label="Zone" value={unit.zone_name} />
-             
+          
             </div>
           </div>
+                {/* Account Information */}
+          <div className="detail-section">
+            <h3>
+              <i className="fas fa-building"></i> Account Information
+            </h3>
+            <div className="detail-grid">
+              <DetailItem label="Account Name" value={unit.account_name} />
+              <DetailItem label="Parent Account" value={unit.parent_account} />
+              <DetailItem label="Key Account" value={unit.key_account ? 'Yes' : 'No'} />
+              <DetailItem label="Key Account Manager" value={unit.ke_account_manager} />
+              <DetailItem label="AVO Carbon Main Contact" value={unit.avo_carbon_main_contact} />
+              <DetailItem label="AVO Carbon Tech Lead" value={unit.avo_carbon_tech_lead} />
+              <DetailItem label="Type" value={unit.type} />
+              <DetailItem label="Industry" value={unit.industry} />
+              <DetailItem label="Account Owner" value={unit.account_owner} />
+              <DetailItem label="Phone" value={unit.phone} isPhone />
+              <DetailItem label="Website" value={unit.website} />
+              <DetailItem label="Employees" value={unit.employees} />
+              <DetailItem label="Useful Information" value={unit.useful_information} />
+              <DetailItem label="Billing Account Number" value={unit.billing_account_number} />
+              <DetailItem label="Product Family" value={unit.product_family} />
+              <DetailItem label="Account Currency" value={unit.account_currency} />
+            </div>
+          </div>
+
+          {/* Company Information */}
+          <div className="detail-section">
+            <h3>
+              <i className="fas fa-info-circle"></i> Company Information
+            </h3>
+            <div className="detail-grid">
+              <DetailItem label="Start Year" value={unit.start_year} />
+              <DetailItem label="Solvent Customer" value={unit.solvent_customer} />
+              <DetailItem label="Solvency Info" value={unit.solvency_info} />
+              <DetailItem label="Budget AVO Carbon" value={unit.budget_avo_carbon} />
+              <DetailItem label="AVO Carbon Potential Business" value={unit.avo_carbon_potential_buisness} />
+            </div>
+          </div>
+
+          {/* Address Information */}
+          <div className="detail-section">
+            <h3>
+              <i className="fas fa-map-marker-alt"></i> Address Information
+            </h3>
+            
+            <div className="address-section">
+              <h4>Billing Address</h4>
+              <div className="detail-grid">
+                <DetailItem label="Billing Street" value={unit.billing_street} />
+                <DetailItem label="Billing City" value={unit.billing_city} />
+                <DetailItem label="Billing State/Province" value={unit.billing_state} />
+                <DetailItem label="Billing Zip/Postal Code" value={unit.billing_zip} />
+                <DetailItem label="Billing Country" value={unit.billing_country} />
+              </div>
+            </div>
+
+            <div className="address-section">
+              <h4>Shipping Address</h4>
+              <div className="detail-grid">
+                <DetailItem label="Shipping Street" value={unit.shipping_street} />
+                <DetailItem label="Shipping City" value={unit.shipping_city} />
+                <DetailItem label="Shipping State/Province" value={unit.shipping_state} />
+                <DetailItem label="Shipping Zip/Postal Code" value={unit.shipping_zip} />
+                <DetailItem label="Shipping Country" value={unit.shipping_country} />
+              </div>
+            </div>
+
+            <DetailItem label="Copy Billing to Shipping" value={unit.copy_billing ? 'Yes' : 'No'} />
+          </div>
+
+          {/* Agreements */}
+          <div className="detail-section">
+            <h3>
+              <i className="fas fa-file-contract"></i> Agreements
+            </h3>
+            <div className="detail-grid">
+              <DetailItem label="Confidentiality Agreement" value={unit.confidentiality_agreement ? 'Yes' : 'No'} />
+              <DetailItem label="Quality Agreement" value={unit.quality_agreement ? 'Yes' : 'No'} />
+              <DetailItem label="Logistics Agreement" value={unit.logistics_agreement ? 'Yes' : 'No'} />
+              <DetailItem label="Terms of Purchase" value={unit.terms_purshase ? 'Yes' : 'No'} />
+              <DetailItem label="Payment Conditions" value={unit.payment_conditions} />
+              <DetailItem label="Tech Key Account" value={unit.tech_key_account} />
+            </div>
+          </div>   
 
           {unit.responsible && (
             <div className="detail-section">
