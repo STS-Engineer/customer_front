@@ -112,38 +112,80 @@ const CustomerManagement = () => {
       console.log('Fetched customer data:', customerData); // Debug log
       
       setEditingCustomer(customerData);
-      setCompleteCustomerData({
-        group: {
-          groupe_name: customerData.groupe_name,
-          Description: customerData.Description || ''
-        },
-        units: customerData.units.map(unit => ({
-          unit_id: unit.unit_id,
-          unit_name: unit.unit_name,
-          city: unit.city || '',
-          country: unit.country || '',
-          zone_name: unit.zone_name || '',
-          responsible: unit.responsible ? {
-            Person_id: unit.responsible.Person_id,
-            first_name: unit.responsible.first_name || '',
-            last_name: unit.responsible.last_name || '',
-            job_title: unit.responsible.job_title || '',
-            email: unit.responsible.email || '',
-            phone_number: unit.responsible.phone_number || '',
-            role: unit.responsible.role || 'Contact',
-            zone_name: unit.responsible.zone_name || ''
-          } : {
-            Person_id: null,
-            first_name: '',
-            last_name: '',
-            job_title: '',
-            email: '',
-            phone_number: '',
-            role: 'Contact',
-            zone_name: ''
-          }
-        }))
-      });
+    setCompleteCustomerData({
+  group: {
+    groupe_name: customerData.groupe_name,
+    Description: customerData.Description || ''
+  },
+  units: customerData.units.map(unit => ({
+    unit_id: unit.unit_id,
+    unit_name: unit.unit_name || '',
+    city: unit.city || '',
+    country: unit.country || '',
+    com_person_id: unit.com_person_id || null,
+    zone_name: unit.zone_name || '',
+    account_name: unit.account_name || '',
+    parent_account: unit.parent_account || '',
+    key_account: unit.key_account || false,
+    ke_account_manager: unit.ke_account_manager || '',
+    avo_carbon_main_contact: unit.avo_carbon_main_contact || '',
+    avo_carbon_tech_lead: unit.avo_carbon_tech_lead || '',
+    type: unit.type || '',
+    industry: unit.industry || '',
+    account_owner: unit.account_owner || '',
+    phone: unit.phone || '',
+    website: unit.website || '',
+    employees: unit.employees || '',
+    useful_information: unit.useful_information || '',
+    billing_account_number: unit.billing_account_number || '',
+    product_family: unit.product_family || '',
+    account_currency: unit.account_currency || '',
+    start_year: unit.start_year || '',
+    solvent_customer: unit.solvent_customer || '',
+    solvency_info: unit.solvency_info || '',
+    budget_avo_carbon: unit.budget_avo_carbon || '',
+    avo_carbon_potential_buisness: unit.avo_carbon_potential_buisness || '',
+    billing_address_search: unit.billing_address_search || '',
+    billing_street: unit.billing_street || '',
+    billing_city: unit.billing_city || '',
+    billing_state: unit.billing_state || '',
+    billing_zip: unit.billing_zip || '',
+    billing_country: unit.billing_country || '',
+    shipping_address_search: unit.shippping_address_search || '',
+    shipping_street: unit.shipping_street || '',
+    shipping_city: unit.shipping_city || '',
+    shipping_state: unit.shipping_state || '',
+    shipping_zip: unit.shipping_zip || '',
+    shipping_country: unit.shipping_country || '',
+    copy_billing: unit.copy_billing || false,
+    confidentiality_agreement: unit.confidentiality_agreement || false,
+    quality_agreement: unit.quality_agreement || false,
+    terms_purshase: unit.terms_purshase || false,
+    logistics_agreement: unit.logistics_agreement || false,
+    payment_conditions: unit.payment_conditions || '',
+    tech_key_account: unit.tech_key_account || '',
+    responsible: unit.responsible ? {
+      Person_id: unit.responsible.Person_id,
+      first_name: unit.responsible.first_name || '',
+      last_name: unit.responsible.last_name || '',
+      job_title: unit.responsible.job_title || '',
+      email: unit.responsible.email || '',
+      phone_number: unit.responsible.phone_number || '',
+      role: unit.responsible.role || 'Contact',
+      zone_name: unit.responsible.zone_name || ''
+    } : {
+      Person_id: null,
+      first_name: '',
+      last_name: '',
+      job_title: '',
+      email: '',
+      phone_number: '',
+      role: 'Contact',
+      zone_name: ''
+    }
+  }))
+});
+
       
       setFormErrors({});
       setIsCompleteCustomerModalOpen(true);
@@ -234,7 +276,7 @@ const addUnit = () => {
         // Account Information
         account_name: '',
         parent_account: '',
-        key_account: '',
+        key_account: false,
         ke_account_manager: '',
         avo_carbon_main_contact: '',
         avo_carbon_tech_lead: '',
@@ -509,7 +551,7 @@ const handleSubmitCompleteCustomer = async (e) => {
           // Account Information
           account_name: unit.account_name || null,
           parent_account: unit.parent_account || null,
-          key_account: unit.key_account || null,
+          key_account: unit.key_account || false,
           ke_account_manager: unit.ke_account_manager || null,
           avo_carbon_main_contact: unit.avo_carbon_main_contact || null,
           avo_carbon_tech_lead: unit.avo_carbon_tech_lead || null,
@@ -982,11 +1024,12 @@ const CompleteCustomerModal = ({
       Key Account
     </label>
     <input
-      type="text"
+      type="checkbox"
       id={`key_account_${unitIndex}`}
-      value={unit.key_account || ''}
-      onChange={(e) => onUnitChange(unitIndex, 'key_account', e.target.value)}
-      className="form-input"
+       checked={unit.key_account || false}
+      onChange={(e) => onUnitChange(unitIndex, 'key_account', e.target.checked)}
+     className="checkbox-input"
+  
       placeholder="Key account"
     />
   </div>
