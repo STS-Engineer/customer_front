@@ -519,7 +519,11 @@ const handleSubmitCompleteCustomer = async (e) => {
       await Promise.all(unitPromises);
       console.log('🔥 Toast launched: Group created/updated');
 
-      toast.success('Customer updated successfully!', 'success');
+              toast.success('Customer updated successfully!', {
+                    position: "top-center",
+                    autoClose: 3000,
+                    toastClassName: "custom-toast-offset",
+                });
     } else {
       // CREATE NEW CUSTOMER
       // 1. First create the group
@@ -614,7 +618,11 @@ const handleSubmitCompleteCustomer = async (e) => {
       await Promise.all(unitPromises);
 
       console.log('🔥 Toast launched: Group created')
-      toast.success('Customer created successfully!', 'success');
+              toast.success('Customer created successfully!', {
+                    position: "top-center",
+                    autoClose: 3000,
+                    toastClassName: "custom-toast-offset",
+                });
     }
 
     // Refresh the customers list
@@ -643,7 +651,11 @@ const handleSubmitCompleteCustomer = async (e) => {
         throw new Error(errorData.error || 'Failed to delete group');
       }
       console.log('🔥 Toast launched: Group created/updated');
-      toast.success('Group and associated units deleted successfully!', 'success');
+              toast.success('Customer deleted successfully!', {
+                    position: "top-center",
+                    autoClose: 3000,
+                    toastClassName: "custom-toast-offset",
+                });
       await fetchCustomers();
       closeModals();
 
